@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model School {
+  id          String   @id @default(cuid())
+  name        String
+  address     String?
+  phoneNumber String?
+  email       String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  users User[]
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phoneNumber String?
+  role        String // Enum to differentiate user types
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  // Relationships
+  subjects      Subject[]
+  results       Result[]
+  children      User[]         @relation("ParentChild")
+  parent        User?          @relation("ParentChild", fields: [parentId], references: [id])
+  events        Event[]
+  managedEvents Event[]        @relation("ManagedEvents")
+  parentId      String?
+  Participants  Participants[]
+}
+
+// Enum to differentiate user roles
+// enum Role {
+//   ADMIN
+//   TEACHER
+//   STUDENT
+//   PARENT
+// }
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  teacherId String?
+  teacher   User?   @relation(fields: [teacherId], references: [id])
+  exams     Exam[]
+}
+
+model Exam {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  results   Result[]
+}
+
+model Result {
+  id        String   @id @default(cuid())
+  grade     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  examId    String
+  exam      Exam   @relation(fields: [examId], references: [id])
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  isUpcoming  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  adminId      String?
+  admin        User?          @relation("ManagedEvents", fields: [adminId], references: [id])
+  participants Participants[]
+  user         User?          @relation(fields: [userId], references: [id])
+  userId       String?
+}
+
+model Participants {
+  id            String   @id @default(cuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id])
+  participantId String
+  participant   User     @relation(fields: [participantId], references: [id])
+  createdAt     DateTime @default(now())
+}
