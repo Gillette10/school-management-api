@@ -25,6 +25,17 @@ export const CreateStudents = async (
 
 		const data = schema.parse(requestBody);
 
+		const permissions = context?.permissions as string[];
+		console.log('🚀🚀  -> CreateParents -> permissions:', permissions);
+		if (!permissions.includes('full_access')) {
+			return {
+				status: 401,
+				jsonBody: {
+					message: 'Unauthorized',
+				},
+			};
+		}
+
 		// check if the school exists
 		const school = await prisma.school.findUnique({
 			where: { id: data.schoolId },
