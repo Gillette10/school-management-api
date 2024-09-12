@@ -26,8 +26,7 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      vmImage: $(vmImageName)
+    pool: my-personal-computer
 
     steps:
     - task: NodeTool@0
@@ -68,8 +67,7 @@ stages:
   - deployment: Deploy
     displayName: Deploy
     environment: $(environmentName)
-    pool:
-      vmImage: $(vmImageName)
+    pool: my-personal-computer
     strategy:
       runOnce:
         deploy:
