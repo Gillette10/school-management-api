@@ -10,7 +10,7 @@ export const createSchoolSchema = z.object({
 			email: z.string().email(),
 			name: z.string(),
 			phoneNumber: z.string().optional(),
-			role: z.enum(['admin', 'teacher']),
+			role: z.enum(['ADMIN']),
 		}),
 	),
 });

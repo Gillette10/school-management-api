@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -25,7 +25,7 @@ model User {
   name        String
   email       String   @unique
   phoneNumber String?
-  role        String // Enum to differentiate user types
+  roles       Role[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -43,13 +43,12 @@ model User {
   Participants  Participants[]
 }
 
-// Enum to differentiate user roles
-// enum Role {
-//   ADMIN
-//   TEACHER
-//   STUDENT
-//   PARENT
-// }
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
 
 model Subject {
   id          String   @id @default(cuid())

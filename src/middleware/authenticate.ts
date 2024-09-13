@@ -3,7 +3,7 @@ import {
 	HttpResponseInit,
 	InvocationContext,
 } from '@azure/functions';
-import { JwtPayload, decode, verify } from 'jsonwebtoken';
+import { JwtPayload, decode, verify, sign } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { errorHandler } from '../features/error-handler';
 import { Unauthorized } from 'http-errors';
@@ -46,13 +46,14 @@ export const Authenticate = async (
 
 		const kid = decoded.header.kid;
 
-		const signingKey = await client.getSigningKey(kid);
+		const key = await client.getSigningKey(kid);
+		const signingKey = key.getPublicKey();
 
 		// console.log('🚀🚀  -> client:', signingKey);
 
-		const verified = verify(token, signingKey.getPublicKey(), {
+		const verified = verify(token, signingKey, {
 			audience: process.env.AUTH0_AUDIENCE_FRONTEND,
-			issuer: `${process.env.AUTH0_ISSUER_BASE_URL}`,
+			issuer: process.env.AUTH0_ISSUER_BASE_URL,
 			algorithms: ['RS256'],
 		}) as JwtPayload;
 

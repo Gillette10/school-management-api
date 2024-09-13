@@ -1,4 +1,3 @@
-import * as z from 'zod';
 import { prisma } from '../../../prisma';
 import { CreateAuthUser } from '../../utils/create_auth_user';
 import { errorHandler } from '../../features/error-handler';
@@ -18,23 +17,20 @@ export const CreateSchool = async (
 			where: {
 				name: data.name,
 			},
-			include: {
-				users: true,
-			},
 		});
 
 		if (school) {
 			return {
 				status: 400,
 				jsonBody: {
-					message: 'school already exists',
-					data: school,
+					message: 'School already exists',
+					// data: school,
 				},
 			};
 		}
 
 		// check for at least one admin
-		if (data.users.filter((user) => user.role === 'admin').length === 0) {
+		if (data.users.filter((user) => user.role === 'ADMIN').length === 0) {
 			return {
 				status: 400,
 				jsonBody: {
@@ -54,7 +50,7 @@ export const CreateSchool = async (
 						email: user.email,
 						name: user.name,
 						phoneNumber: user.phoneNumber || null,
-						role: user.role,
+						roles: [user.role],
 					})),
 				},
 			},

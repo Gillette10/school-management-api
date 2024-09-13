@@ -16,7 +16,7 @@ export const CreateUsers = async (
 					email: z.string(),
 					name: z.string(),
 					phoneNumber: z.string().optional(),
-					role: z.enum(['parent', 'teacher', 'admin']),
+					role: z.enum(['ADMIN', 'TEACHER', 'PARENT']),
 				}),
 			),
 		});
@@ -49,24 +49,24 @@ export const CreateUsers = async (
 			};
 		}
 
-		const createdUsers = await prisma.user.createMany({
-			data: data.users.map((parent) => ({
-				email: parent.email,
-				name: parent.name,
-				phoneNumber: parent.phoneNumber || null,
-				role: parent.role,
-				schoolId: data.schoolId,
-			})),
-		});
-
-		console.log('🚀🚀  -> CreateUsers -> updatedParent:', createdUsers);
+		for (const user of data.users) {
+			await prisma.user.create({
+				data: {
+					roles: [user.role],
+					email: user.email,
+					name: user.name,
+					phoneNumber: user.phoneNumber || null,
+					schoolId: data.schoolId,
+				},
+			});
+		}
 
 		await CreateAuthUser({
-			users: data.users.map((parent) => ({
-				email: parent.email,
-				name: parent.name,
-				phoneNumber: parent.phoneNumber || null,
-				role: parent.role,
+			users: data.users.map((user) => ({
+				email: user.email,
+				name: user.name,
+				phoneNumber: user.phoneNumber || null,
+				role: user.role,
 			})),
 			school: school,
 		});

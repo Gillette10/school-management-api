@@ -5,6 +5,7 @@ import { CreateSchool } from '../controllers/management/create-school';
 import { Authenticate } from '../middleware/authenticate';
 import { CreateUsers } from '../controllers/management/create_users';
 import { CreateStudents } from '../controllers/management/create-students';
+import { AssignRoleToUser } from '../controllers/management/assign_roles';
 
 config();
 
@@ -29,5 +30,14 @@ app.http('create-students', {
 	route: 'management/create-students',
 	handler: (request, context) => {
 		return Authenticate(request, context, CreateStudents);
+	},
+});
+
+app.http('assign-role', {
+	methods: ['POST'],
+	authLevel: 'anonymous',
+	route: 'management/assign-role',
+	handler: (request, context) => {
+		return Authenticate(request, context, AssignRoleToUser);
 	},
 });

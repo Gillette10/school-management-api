@@ -62,7 +62,9 @@ export const CreateStudents = async (
 				id: {
 					in: parentIds,
 				},
-				role: 'parent',
+				roles: {
+					has: 'PARENT',
+				},
 			},
 			select: {
 				id: true,
@@ -88,7 +90,7 @@ export const CreateStudents = async (
 				name: student.name,
 				phoneNumber: student.phoneNumber || null,
 				parentId: student.parentId,
-				role: 'student',
+				roles: ['STUDENT'],
 				schoolId: data.schoolId,
 			})),
 		});
@@ -100,7 +102,7 @@ export const CreateStudents = async (
 				email: student.email,
 				name: student.name,
 				phoneNumber: student.phoneNumber || null,
-				role: 'student',
+				role: 'STUDENT',
 			})),
 			school: school,
 		});
