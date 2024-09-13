@@ -113,6 +113,6 @@ export const CreateStudents = async (
 			},
 		};
 	} catch (error) {
-		errorHandler(error);
+		return errorHandler(error);
 	}
 };

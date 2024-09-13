@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 import { ChangePassword } from '../controllers/misc/change_password';
 import { CreateSchool } from '../controllers/management/create-school';
 import { Authenticate } from '../middleware/authenticate';
-import { CreateParents } from '../controllers/management/create_parent';
+import { CreateUsers } from '../controllers/management/create_users';
 import { CreateStudents } from '../controllers/management/create-students';
 
 config();
@@ -15,12 +15,12 @@ app.http('create-school', {
 	handler: CreateSchool,
 });
 
-app.http('create-parents', {
+app.http('create-users', {
 	methods: ['POST'],
 	authLevel: 'anonymous',
-	route: 'management/create-parents',
+	route: 'management/create-users',
 	handler: (request, context) => {
-		return Authenticate(request, context, CreateParents);
+		return Authenticate(request, context, CreateUsers);
 	},
 });
 app.http('create-students', {

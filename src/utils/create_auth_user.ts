@@ -75,7 +75,7 @@ export const CreateAuthUser = async ({
 		let url = new URL(process.env.FRONTEND_URL as string);
 		url.searchParams.append('token', token);
 
-		console.log('🚀🚀  -> url:', url);
+		console.log('🚀🚀  -> url:', url.href);
 		// const emailBody = await GetEmailTemplate(user.name, url.href);
 
 		// await sendEmail(createdUser.data.email, emailBody);

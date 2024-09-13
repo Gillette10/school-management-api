@@ -4,24 +4,29 @@ import { prisma } from '../../../prisma';
 import { CreateAuthUser } from '../../utils/create_auth_user';
 import { errorHandler } from '../../features/error-handler';
 
-export const CreateParents = async (
+export const CreateUsers = async (
 	request: HttpRequest,
 	context: InvocationContext,
 ) => {
 	try {
 		const schema = z.object({
 			schoolId: z.string(),
-			parents: z.array(
+			users: z.array(
 				z.object({
 					email: z.string(),
 					name: z.string(),
 					phoneNumber: z.string().optional(),
+					role: z.enum(['parent', 'teacher', 'admin']),
 				}),
 			),
 		});
 
+		const requestBody = await request.json();
+
+		const data = schema.parse(requestBody);
+
 		const permissions = context?.permissions as string[];
-		console.log('🚀🚀  -> CreateParents -> permissions:', permissions);
+		console.log('🚀🚀  -> CreateUsers -> permissions:', permissions);
 		if (!permissions.includes('full_access')) {
 			return {
 				status: 401,
@@ -30,10 +35,6 @@ export const CreateParents = async (
 				},
 			};
 		}
-
-		const requestBody = await request.json();
-
-		const data = schema.parse(requestBody);
 
 		const school = await prisma.school.findUnique({
 			where: { id: data.schoolId },
@@ -48,24 +49,24 @@ export const CreateParents = async (
 			};
 		}
 
-		const createdParents = await prisma.user.createMany({
-			data: data.parents.map((parent) => ({
+		const createdUsers = await prisma.user.createMany({
+			data: data.users.map((parent) => ({
 				email: parent.email,
 				name: parent.name,
 				phoneNumber: parent.phoneNumber || null,
-				role: 'parent',
+				role: parent.role,
 				schoolId: data.schoolId,
 			})),
 		});
 
-		console.log('🚀🚀  -> CreateParents -> updatedParent:', createdParents);
+		console.log('🚀🚀  -> CreateUsers -> updatedParent:', createdUsers);
 
 		await CreateAuthUser({
-			users: data.parents.map((parent) => ({
+			users: data.users.map((parent) => ({
 				email: parent.email,
 				name: parent.name,
 				phoneNumber: parent.phoneNumber || null,
-				role: 'parent',
+				role: parent.role,
 			})),
 			school: school,
 		});
@@ -74,9 +75,10 @@ export const CreateParents = async (
 			status: 201,
 			jsonBody: {
 				message: 'Parents created successfully',
+				data: data.users,
 			},
 		};
 	} catch (error) {
-		errorHandler(error);
+		return errorHandler(error);
 	}
 };

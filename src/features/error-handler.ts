@@ -28,6 +28,7 @@ export async function errorHandler(err: any): Promise<HttpResponseInit> {
 			}),
 		);
 	} else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+		// Handle Prisma validation error
 		switch (err.code) {
 			case 'P2000':
 				// Value too long for column

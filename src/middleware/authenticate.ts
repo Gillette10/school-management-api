@@ -28,7 +28,7 @@ export const Authenticate = async (
 		const authHeader = request.headers.get('authorization');
 		const token = authHeader ? authHeader.split(' ')[1] : null;
 
-		console.log('🚀🚀  -> token:', token);
+		// console.log('🚀🚀  -> token:', token);
 
 		if (!token) {
 			context.log('Unauthorized: No token provided');
@@ -42,13 +42,13 @@ export const Authenticate = async (
 
 		const decoded = decode(token, { complete: true });
 
-		console.log('🚀🚀  -> decoded:', decoded);
+		// console.log('🚀🚀  -> decoded:', decoded);
 
 		const kid = decoded.header.kid;
 
 		const signingKey = await client.getSigningKey(kid);
 
-		console.log('🚀🚀  -> client:', signingKey);
+		// console.log('🚀🚀  -> client:', signingKey);
 
 		const verified = verify(token, signingKey.getPublicKey(), {
 			audience: process.env.AUTH0_AUDIENCE_FRONTEND,
