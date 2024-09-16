@@ -94,7 +94,7 @@ export const AssignRoleToUser = async (
 		return {
 			status: 200,
 			jsonBody: {
-				message: 'Roles assigned successfully.',
+				message: 'Role assigned successfully.',
 				assignedRole: data.role,
 			},
 		};
